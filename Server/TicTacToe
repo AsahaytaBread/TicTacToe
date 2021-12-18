@@ -1,0 +1,433 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package tictactoe;
+import java.net.*;
+import java.io.*;
+
+public class TicTacToe {
+  
+static int[] board = new int[9];
+static int slots = 0;
+static Player[] players = new Player[2];
+static String clientMessages="list";
+static boolean Xturn = true;
+
+
+
+
+ public static void main(String[] args){
+     
+    new Thread(new startServer()).start();
+  
+    
+}
+
+
+     private static void checkboard(){
+     
+     if(board[0] + board[1] + board[2] == 30) {
+//         try{
+//             
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(IOException e){}
+            clientMessages="X wins";
+            resetBoard();
+     }
+     
+     else if(board[0] + board[1] + board[2] == 6){ ////////
+//          try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(IOException e){}
+            clientMessages="O wins";
+
+            resetBoard();
+     }
+     else if(board[3] + board[4] + board[5] == 30){
+//         try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(IOException e){}
+            clientMessages="X wins";
+
+            resetBoard();
+     }
+     else if(board[3] + board[4] + board[5] == 6) {////////
+//         try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard(); clientMessages="O wins";
+     }
+     else if(board[6] + board[7] + board[8] == 30){
+//          try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="X wins";
+
+     }
+         
+     else if(board[6] + board[7] + board[8] == 6){//////////////////////
+//            try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();   clientMessages="O wins";
+     }
+     
+     else if(board[0] + board[3] + board[6] == 30){
+//          try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="X wins";
+
+     }
+     else if(board[0] + board[3] + board[6] == 6){ ////////
+//            try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();      clientMessages="O wins";
+     }
+     
+     
+     else if(board[1] + board[4] + board[7] == 30){
+//          try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="X wins";
+
+     }
+     else if(board[1] + board[4] + board[7] == 6){////////
+//         try{
+//             ooutStream.writeObject("O wins");
+////             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard(); clientMessages="O wins";
+     }
+     else if(board[2] + board[5] + board[8] == 30){
+//          try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="X wins";
+
+     }
+     else if(board[2] + board[5] + board[8] == 6){//////////////////////
+//         try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard(); clientMessages="O wins";
+     }
+     else if(board[0] + board[4] + board[8] == 30){
+//          try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="X wins";
+
+     }
+     else if(board[0] + board[4] + board[8] == 6){///////
+//         try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard(); clientMessages="O wins";
+     }
+     else if(board[2] + board[4] + board[6] == 30){
+//          try{
+//             ooutStream.writeObject("X wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="X wins";
+
+     }
+     else if(board[2] + board[4] + board[6] == 6){///////
+//         try{
+//             ooutStream.writeObject("O wins");
+//             ooutStream.flush();
+//         }
+//         catch(Exception e){}
+            resetBoard();            clientMessages="O wins";
+
+     }
+     
+     
+   }
+     private static void resetBoard(){
+         for(int i=0; i<board.length;i++){
+             board[i]=0;
+         }
+     }
+     static class startServer implements Runnable {
+         
+         startServer() {
+         }
+         
+         @Override
+         public void run(){
+             try{
+                 ServerSocket serverSocket=new ServerSocket(8888);
+                 while(true){
+                     Socket socket=serverSocket.accept();
+                     int player = slots;
+                     if (slots ==0){
+                         players[player] = new Player("X");
+                         slots++;
+                     }
+                     else if (slots ==1){
+                         players[player] = new Player("O");
+                         slots++;
+                     }
+                     
+                     new Thread(() -> {
+                         try{
+                             
+                             System.out.append("Received a client connection\n");
+                              InputStream inStream=socket.getInputStream();
+                              OutputStream  outStream=socket.getOutputStream();
+                              ObjectInputStream oinStream=new ObjectInputStream(inStream);
+                              ObjectOutputStream ooutStream=new ObjectOutputStream(outStream);
+                             
+                              ooutStream.writeObject(players[player].getName());
+                              String message;
+                             while(true){
+                                 
+                              message = (String)oinStream.readObject();
+
+                                 if(player==0 && Xturn==true){
+                                      switch (message) {
+                                     case "T1X":
+                                         board[0] = 10;
+                                         clientMessages = "t1x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t1x");
+                                         Xturn = !Xturn;
+                                         break;
+                                     
+                                     case "T2X":
+                                         board[1] = 10;
+                                         clientMessages = "t2x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t2x");
+                                         Xturn = !Xturn;
+                                         break;
+                                   
+                                     case "T3X":
+                                         board[2] = 10;
+                                         clientMessages = "t3x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t3x");
+                                         Xturn = !Xturn;
+                                         break;
+                                   
+                                     case "T4X":
+                                         board[3] = 10;
+                                         clientMessages = "t4x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t4x");
+                                         Xturn = !Xturn;
+                                         break;
+                                     
+                                     case "T5X":
+                                         board[4] = 10;
+                                         clientMessages = "t5x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t5x");
+                                         Xturn = !Xturn;
+                                         break;
+                                
+                                     case "T6X":
+                                         board[5] = 10;
+                                         clientMessages = "t6x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t6x");
+                                         Xturn = !Xturn;
+                                         break;
+                                
+                                     case "T7X":
+                                         board[6] = 10;
+                                         clientMessages = "t7x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t7x");
+                                         Xturn = !Xturn;
+                                         break;
+                                  
+                                     case "T8X":
+                                         board[7] = 10;
+                                         clientMessages = "t8x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t8x");
+                                         Xturn = !Xturn;
+                                         break;
+                                                                           
+                                     case "T9X":
+                                         board[8] = 10;
+                                         clientMessages = "t9x";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t9x");
+                                         Xturn = !Xturn;
+                                         break;
+                                         
+                                                                   
+                                     default:
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("Client is asking for all the messages\n");
+                                         break;
+                                 }
+                                      
+                            }
+                                 
+                                 else if(player==1 && Xturn == false){
+                                       switch (message) {
+                                     
+                                     case "T1O":
+                                         board[0] = 2;
+                                         clientMessages = "t1o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t1o");
+                                         Xturn = !Xturn;
+                                         break;
+                                    
+                                     case "T2O":
+                                         board[1] = 2;
+                                         clientMessages = "t2o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t2o");
+                                         Xturn = !Xturn;
+                                         break;
+                                    
+                                     case "T3O":
+                                         board[2] = 2;
+                                         clientMessages = "t3o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t3x");
+                                         Xturn = !Xturn;
+                                         
+                                         break;
+                                   
+                                     case "T4O":
+                                         board[3] = 2;
+                                         clientMessages = "t4o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t4o");
+                                         Xturn = !Xturn;
+                                         break;
+                                    
+                                     case "T5O":
+                                         board[4] = 2;
+                                         clientMessages = "t5o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t5o");
+                                         Xturn = !Xturn;
+                                         break;
+                                   
+                                     case "T6O":
+                                         board[5] = 2;
+                                         clientMessages = "t6o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t6o");
+                                         Xturn = !Xturn;
+                                         break;
+                                    
+                                     case "T7O":
+                                         board[6] = 2;
+                                         clientMessages = "t7o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t7o");
+                                         Xturn = !Xturn;
+                                         break;
+                                   
+                                     case "T8O":
+                                         board[7] = 2;
+                                         clientMessages = "t8o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t8o");
+                                         Xturn = !Xturn;
+                                         break;
+                                  
+                                     case "T9O":
+                                         board[8] = 2;
+                                         clientMessages = "t9o";
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("client message is t9o");
+                                         Xturn = !Xturn;
+                                         break;
+                                         
+                                     default:
+                                         ooutStream.writeObject(clientMessages);
+                                         ooutStream.flush();
+                                         System.out.append("Client is asking for all the messages\n");
+                                         break;
+                                 }
+                            }
+                                
+                                 else{
+                                     ooutStream.writeObject(clientMessages);
+                                     ooutStream.flush();
+                                     System.out.append("Client is asking for all the messages\n");
+                                     
+                                 }
+                                 checkboard();
+                             }
+                         }
+                         catch(IOException | ClassNotFoundException e){ System.out.print(e);}
+                        //  slots--;
+                     }).start();
+                     
+                    
+                 } //end of while before accept
+                 
+                 
+             }catch(IOException e){System.out.print(e);}
+         }//end of run
+     }
+}
+    
+
+    
+
+ 
+    
